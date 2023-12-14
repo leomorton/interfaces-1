@@ -2,26 +2,126 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+* {
+    /* border: 1px solid red; */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+:root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
+    --background-start-rgb: 20, 10, 50;
     --background-end-rgb: 0, 0, 0;
-  }
+    --buttonColourMiddle: #850101;
+    --buttonColourEnd: #ffa600;
+    --animTime: 1s;
+    --buttonWidth: 120px;
+    --buttonHeight: 40px;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+    font-family: "JetBrains Mono", monospace;
+}
+
+/* black rectangle used to create main border effect */
+.buttonBorder,
+.buttonBlur {
+    background: black;
+    border-radius: 0.2rem;
+    position: absolute;
+    padding: 0.2em 1em;
+    /* transform: translate(-50%, -50%); */
+}
+
+/* gradient text which achieves the effect by mask out a gradient, using the text */
+.buttonText {
+    background: linear-gradient(-180deg, transparent, var(--buttonColourMiddle), var(--buttonColourEnd));
+    background-size: 400% 400%;
+    background-clip: text;
+    color: #000;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation-name: textAnim;
+    animation-timing-function: ease;
+    animation-iteration-count: infinite;
+    width: fit-content;
+    margin: auto;
+}
+
+/* gradient used to create main border effect */
+.buttonBorder::after,
+.buttonBlur::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    background: linear-gradient(-180deg, var(--buttonColourMiddle), var(--buttonColourEnd));
+    background-size: 400% 400%;
+    animation: borderAnim var(--animTime) ease infinite;
+    border-radius: inherit;
+}
+
+/* blurred border thickness */
+.buttonBlur::after {
+    inset: -5px;
+}
+
+/* unblurred border thickness */
+.buttonBorder::after {
+    inset: -2px;
+}
+
+/* wraps the buttonBlur and does the blurring */
+.buttonBlurWrapper {
+    filter: blur(8px);
+    transform: translate3d(0, 100%, 0);
+    /* this time it's necessary for the blur not to be clipped oddly. perhaps something to do with stacking contexts */
+}
+
+/* wraps the buttonBorder and applies blending to stop the black rectangle occluding the glow below */
+.buttonBorderWrapper {
+    mix-blend-mode: screen;
+}
+
+.glowButton {
+    cursor: pointer;
+}
+
+/* need to make sure the black rect is in the same stacking context as the
+as the gradient background/outline so that the blend mode can be applied
+correctly. It works in Chrome just */
+
+@keyframes borderAnim {
+    0% {
+        background-position: 0% 0%;
+    }
+    20% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 0% 100%;
+    }
+    70% {
+        background-position: 0% 100%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+@keyframes textAnim {
+    0% {
+        background-position: 0% 20%;
+    }
+    20% {
+        background-position: 0% 20%;
+    }
+    50% {
+        background-position: 0% 100%;
+    }
+    70% {
+        background-position: 0% 100%;
+    }
+    100% {
+        background-position: 0% 20%;
+    }
 }
